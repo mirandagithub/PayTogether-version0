@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "PayTogether": {
+            "applicationId": "ZWJYl2molT6LxpiIpgd1yumt2bfOEHzJDq1EjLRr", 
+            "masterKey": "3SDDHLV6v3SeNMZPcMnqi2BqvH6ltlXOJqkypOl1"
+        }, 
+        "_default": {
+            "link": "PayTogether"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.3.5"
+    }
+}
