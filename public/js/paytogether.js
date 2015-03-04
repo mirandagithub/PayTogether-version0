@@ -1,6 +1,7 @@
 Parse.initialize("ZWJYl2molT6LxpiIpgd1yumt2bfOEHzJDq1EjLRr", "c2Xnob8YsgCcvIf38SRUrlcGUiHxdgxb8Skj506T");
 
-
+var Balance = Parse.Object.extend("Balance");
+var Record = Parse.Object.extend("Record");
 
 function signupUser(){
 	console.log("sign up user!");        
@@ -109,6 +110,12 @@ function cleanData(user){
 	$("#data-msg").html("data goes here");
 }
 
+function newRecord(){
+	var promise = Parse.Promise.as("The good result.");
+	console.log("new Record");
+	return promise;
+}
+
 $(document).ready(function(){
 	$("#signupBtn").click(function(){
 		signupUser().then(function(){
@@ -116,7 +123,6 @@ $(document).ready(function(){
 			initUser();
 		}, function(error) {
 			//error goes here
-
 		});
 	})
 
@@ -125,8 +131,7 @@ $(document).ready(function(){
 			//success
 			initUser();
 		}, function(error) {
-			//error goes here
-			
+			//error goes here		
 		});;
 	})
 
@@ -135,9 +140,16 @@ $(document).ready(function(){
 			//success
 			initUser();
 		}, function(error) {
-			//error goes here
-			
+			//error goes here		
 		});;;
 	})
+
+	$("#addBtn").click(function(){
+		newRecord().then(function(){
+
+		}, function(error){
+
+		});
+	});
 
 }) // end of "document ready" of jQuery
