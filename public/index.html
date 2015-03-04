@@ -8,8 +8,7 @@
    
     <!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/reset.css">
-    <link rel="stylesheet" href="css/styles.css">
+
     
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="http://www.parsecdn.com/js/parse-1.3.5.min.js"></script>
@@ -19,13 +18,70 @@
     <script type="text/javascript" src="js/paytogether.js"></script>
 
   </head>
-  <body>
-    <div>
-     <p id="welcome">hello</p>
 
+  <body onload="initUser();">
+    <!-- hello message-->
+    <div class="container">
+      <h4 id="msg">Good day, stranger.</h4>
+      <hr>
+    </div>
+    <!-- Sign-up form-->
+    <div class = "container" id="userSignup">
+      <div class = "form-group">
+        <label for="username">Username:</label>
+        <input type="text" class="form-control" id="signup-username">
+      </div>
+        
+      <div class = "form-group">
+        <label for="email">Email:</label>
+        <input type="email" class="form-control" id="signup-email">
+      </div>
+        
+      <div class = "form-group">
+        <label for="password">Password:</label>
+        <input type="password" class="form-control" id="signup-password">
+      </div>
+      <button class="btn btn-primary" id="signupBtn">Sign Up</button>
+      <hr>
     </div>
 
-  
+    <!-- log-in form-->
+    <div class = "container" id="userLogin">
+      <div class = "form-group">
+        <label for="username">Username:</label>
+        <input type="text" class="form-control" id="login-username">
+      </div>
+               
+      <div class = "form-group">
+        <label for="password">Password:</label>
+        <input type="password" class="form-control" id="login-password">
+      </div>      
+      <button class="btn btn-primary" id="loginBtn">Log in</button>
+      <hr>
+    </div>
+
+    <!-- user-data-->
+    <div class="container" id="data">
+      <h1 id="data-msg">Data goes here!</h1>
+      <hr>
+      
+      <div>
+      </div>
+      
+      <div>
+      </div>
+    </div>
+
+    <!-- log-out -->
+    <div class="container" id="userLogout">
+      <button class="btn btn-default" id="logoutBtn">Log out</button>
+      <hr>
+    </div>
+
+    <!-- error msg -->
+    <div class="container">
+      <p id="error-msg"></p>
+    </div>
 
   </body>
 </html>
