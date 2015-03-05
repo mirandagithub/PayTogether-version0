@@ -138,27 +138,26 @@ function cleanData(user){
 }
 
 function newRecord(){
-	var promise = Parse.Promise.as("The good result.");
+	var promise = new Parse.Promise.();
 	console.log("new Record");
 
-
-  var money = parseInt($("#balance")).val());
-  console.log(newRecord);
-  console.log(isNaN(inputMoney));
-
-  if(isNaN(newRecord)) {  //only number can be added
-   	$("#error-msg").html("Must input numbers.");
-  }
-  else {
-   var currentUser = Parse.User.current();
+	var money = parseInt($("#balance")).val());
+	console.log(money);
+    console.log(isNaN(money));
+    
+    if(isNaN(newRecord)) {  //only number can be added
+   		$("#error-msg").html("Must input numbers.");
+   	}
+  	else {
+   	var currentUser = Parse.User.current();
   
-   var record = {
-	 income: true, 
-	 money: money, 
-	 tag: [],
-	 sharedByNumUsers: 1,
-	 createdByUser: currentUser.get("username"),
-	 projectName: "test1" //need to create project later
+   	var record = {
+   		money: money, 
+   		expense: true, 
+   		sharedByNumUsers: 1,
+   		createdByUser: currentUser.get("username"),
+   		projectName: "test1",//need to create project later
+	    tag: []
 	};
     
 
@@ -166,7 +165,9 @@ function newRecord(){
     queryBalance.equalTo("createdByUser", currentUser.get("username"));
     queryBalance.equalTo("projectName", "test1");
 
-   
+    
+  	// Parse.Promise.when(promises);
+
 }
 
 function newProject(){
