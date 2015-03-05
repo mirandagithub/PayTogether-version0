@@ -116,6 +116,34 @@ function newRecord(){
 	return promise;
 }
 
+function newProject(){
+	var promise = new Parse.Promise();
+	var currentUser = Parse.User.current();
+    
+    //create database with ACL security
+    
+    var balance = new Balance();
+    balance.set("value", 0);
+    balance.set("createdByUser", currentUser.getUsername());
+    balance.set("projectName","test1");// need to implement creating project
+    // set ACL
+    var balanceACL = new Parse.ACL(Parse.User.current()); 
+    balanceACL.setPublicReadAccess(false);
+    balance.setACL(balanceACL);
+    balance.save(null, {
+    	success: function (){
+    		promise.resolve("new project done");
+   			console.log("new project");
+    	}, 
+    	error: function(){
+    		promise.reject("can't create project");
+   			console.log("can't create project");
+    	}
+    }); //error handling 
+
+	return promise;
+}
+
 $(document).ready(function(){
 	$("#signupBtn").click(function(){
 		signupUser().then(function(){
@@ -123,6 +151,12 @@ $(document).ready(function(){
 			initUser();
 		}, function(error) {
 			//error goes here
+		}).then(function(){
+			//success, create new project
+			newProject();
+		},function(error){
+			//error goes here
+
 		});
 	})
 
