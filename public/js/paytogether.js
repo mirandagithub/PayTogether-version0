@@ -89,6 +89,7 @@ function initUser(){
 
 		$("#data").show();
 		$("#userLogout").show();
+		debugger;
 		loadData();
   } else {
 		console.log("User has not logged in.");        
@@ -102,9 +103,35 @@ function initUser(){
   }
 }
 
-function loadData(user){
-	$("#data-msg").html("will update data");
+function loadData(){
+	//$("#data-msg").html("will update data");
+	var promise = new Parse.Promise();
+	var currentUser = Parse.User.current();
+	console.log(currentUser);
+	debugger;
+  	var queryBalance = new Parse.Query("Balance");
+  	queryBalance.equalTo("createdByUser", currentUser.get("username"));
+  	queryBalance.equalTo("projectName", "test1");
+
+  	console.log(queryBalance.length);
+  	queryBalance.first({
+        success: function(objects) {
+        	var balance = objects.get("value");
+        	$("#balance").html("$" + balance); 
+        	console.log("hello, balance is " + balance);
+        	promise.resolve();
+        },
+        error: function(objects, error) {
+        	console.log("An error occured :(" + error.code + " " + error.message);
+           	$("#error-msg").html("An error occured :(" + error.code + " " + error.message);
+           	promise.reject();
+
+        }
+    });
+  	return promise;
 }
+
+
 
 function cleanData(user){
 	$("#data-msg").html("data goes here");
@@ -113,7 +140,33 @@ function cleanData(user){
 function newRecord(){
 	var promise = Parse.Promise.as("The good result.");
 	console.log("new Record");
-	return promise;
+
+
+  var money = parseInt($("#balance")).val());
+  console.log(newRecord);
+  console.log(isNaN(inputMoney));
+
+  if(isNaN(newRecord)) {  //only number can be added
+   	$("#error-msg").html("Must input numbers.");
+  }
+  else {
+   var currentUser = Parse.User.current();
+  
+   var record = {
+	 income: true, 
+	 money: money, 
+	 tag: [],
+	 sharedByNumUsers: 1,
+	 createdByUser: currentUser.get("username"),
+	 projectName: "test1" //need to create project later
+	};
+    
+
+	var queryBalance = new Parse.Query("Balance");
+    queryBalance.equalTo("createdByUser", currentUser.get("username"));
+    queryBalance.equalTo("projectName", "test1");
+
+   
 }
 
 function newProject(){
