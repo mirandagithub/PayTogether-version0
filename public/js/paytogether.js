@@ -2,6 +2,7 @@ Parse.initialize("ZWJYl2molT6LxpiIpgd1yumt2bfOEHzJDq1EjLRr", "c2Xnob8YsgCcvIf38S
 
 var Balance = Parse.Object.extend("Balance");
 var Record = Parse.Object.extend("Record");
+var numRecords = 1; // load num of records every time
 
 function signupUser(){
 	console.log("sign up user!");        
@@ -78,6 +79,7 @@ function initUser(){
 	console.log("Get ready!");       
     $("#error-msg").html("");
  
+ 	var promise = Parse.Promise.as();
 	var currentUser = Parse.User.current();
   	if (currentUser) {
   		console.log( currentUser.get("username") + " has logged in.");   
@@ -89,9 +91,9 @@ function initUser(){
 
 		$("#data").show();
 		$("#userLogout").show();
-		debugger;
+		
 		loadData();
-  } else {
+  	} else {
 		console.log("User has not logged in.");        
 		// display log-in page, hide log-out page
 		$("#msg").html("Good day, stranger.");
@@ -100,20 +102,31 @@ function initUser(){
 		$("#userLogin").show();
 		$("#userSignup").show();
  		cleanData();
-  }
+  	}
+  	return promise;
 }
 
 function loadData(){
 	//$("#data-msg").html("will update data");
+	var promises = [];
+	promises[0] = loadBalance();
+	promises[1] = loadRecords();
+
+  	return Parse.Promise.when(promises);
+}
+
+function loadBalance(){
+
 	var promise = new Parse.Promise();
+
 	var currentUser = Parse.User.current();
 	console.log(currentUser);
-	debugger;
+
   	var queryBalance = new Parse.Query("Balance");
   	queryBalance.equalTo("createdByUser", currentUser.get("username"));
   	queryBalance.equalTo("projectName", "test1");
+  	console.log(currentUser.get("username"));
 
-  	console.log(queryBalance.length);
   	queryBalance.first({
         success: function(objects) {
         	var balance = objects.get("value");
@@ -123,52 +136,176 @@ function loadData(){
         },
         error: function(objects, error) {
         	console.log("An error occured :(" + error.code + " " + error.message);
-           	$("#error-msg").html("An error occured :(" + error.code + " " + error.message);
+           	$("#error-msg").html("An error occured :(" + " " + error.message);
            	promise.reject();
 
         }
     });
+
   	return promise;
 }
 
+function loadRecords() {
 
+  	var promise = new Parse.Promise();
+  	var currentUser = Parse.User.current();
+  	var queryRecord = new Parse.Query("Record");
+  	
+  	queryRecord.equalTo("createdByUser", currentUser.get("username"));
+  	queryRecord.descending("createdAt");	// Retrieve the most recent ones
+
+    queryRecord.limit(numRecords); // Only retrieve the last 5
+    
+
+	
+	queryRecord.find({
+  		success: function(results) {
+    		console.log("Successfully retrieved " + results.length + " inputs.");
+    		// Do something with the returned Parse.Object values
+    		// only show 5 records
+
+    		for (var i = 0; i < results.length ; i++) { // show 5 more records
+      			var object = results[i];
+      			$("#h" + parseInt(i)).html(object.get("money"));
+      			$("#d" + parseInt(i)).html(object.get("description"));
+ 
+
+      			console.log(parseInt(i) + " - " + object.get("money"));
+    		}
+    		console.log(results.length > 0);
+
+    		promise.resolve();
+
+  		},
+  		error: function(error) {
+        console.log("An error occured :(" + error.code + " " + error.message);
+        	promise.reject();
+
+  		}
+	});
+	return promise;
+}
+
+function showAll(){
+	console.log("show all");
+
+  var promise = new Parse.Promise();
+  var currentUser = Parse.User.current();
+  var queryRecord = new Parse.Query("Record");
+    
+  queryRecord.equalTo("createdByUser", currentUser.get("username"));
+  queryRecord.descending("createdAt");  // Retrieve the most recent ones
+  
+  var title =  "<tr><th>Latest</th><th>Amount</th><th>Description</th></tr>"
+ 
+  queryRecord.find({
+      success: function(results) {
+        console.log("Successfully retrieved " + results.length + " inputs.");
+        // Do something with the returned Parse.Object values
+        $("#long-table").append(title);
+
+        for (var i = 0; i < results.length ; i++) { // show 5 more records
+            var object = results[i];
+            var entry = "<tr><td>"    + parseInt(i+1) 
+                + "</td><td>" + object.get("money")
+                  + "</td><td>" + object.get("description") 
+                  + "</td></tr>";
+
+            $("#long-table").append(entry);
+
+            console.log(parseInt(i) + " - " + object.get("money"));
+        }
+        console.log(results.length > 0);
+        $("#collapse-msg").html(" ");
+        promise.resolve();
+
+      },
+      error: function(error) {
+        console.log("An error occured :(" + error.code + " " + error.message);
+        $("#collapse-msg").html("Can't get history.");
+        promise.reject();
+
+      }
+  });
+  return promise;
+ 
+}
 
 function cleanData(user){
-	$("#data-msg").html("data goes here");
+	//$("#data-msg").html("data goes here");
 }
 
 function newRecord(){
-	var promise = new Parse.Promise.();
+	var promises = []; 
+	var promise = Parse.Promise.error("An error message.");
 	console.log("new Record");
+	var money = parseInt($("#new-expense").val());
+	var description = $("#new-expense-des").val();
 
-	var money = parseInt($("#balance")).val());
 	console.log(money);
-    console.log(isNaN(money));
+  console.log(isNaN(money));
     
-    if(isNaN(newRecord)) {  //only number can be added
+    if(isNaN(money)) {  //only number can be added
    		$("#error-msg").html("Must input numbers.");
+   		return promise;
    	}
   	else {
-   	var currentUser = Parse.User.current();
-  
-   	var record = {
-   		money: money, 
-   		expense: true, 
-   		sharedByNumUsers: 1,
-   		createdByUser: currentUser.get("username"),
-   		projectName: "test1",//need to create project later
-	    tag: []
+  		var currentUser = Parse.User.current();
+  		var newRecord = {
+	 		isExpense: true, 
+	 		money: money, 
+	 		numUsers: 2,
+	 		description: description,
+   			createdByUser: currentUser.get("username"),
+   			projectName: "test1", //need to create project later
+   			tag: []
+   		};
+
+   		promises[0] = saveRecord(newRecord);
+  		promises[1] = saveBalance(money);
+  		return Parse.Promise.when(promises);
+
 	};
-    
-
-	var queryBalance = new Parse.Query("Balance");
-    queryBalance.equalTo("createdByUser", currentUser.get("username"));
-    queryBalance.equalTo("projectName", "test1");
-
-    
-  	// Parse.Promise.when(promises);
 
 }
+
+function saveBalance(money){
+	var promise = new Parse.Promise();
+	var newBal = money;
+	var currentUser = Parse.User.current();
+	var queryBalance = new Parse.Query("Balance");
+   	queryBalance.equalTo("createdByUser", currentUser.get("username"));
+    queryBalance.equalTo("projectName", "test1");
+
+ 	queryBalance.first({
+      	success: function(bal) {
+      	
+      			// save new record to database
+	 		newBal += bal.get("value");  // update balance on database & screen         
+    		bal.set("value", newBal);
+    		bal.save();
+    		promise.resolve(newBal);
+    	}, 
+    	error: function(obj, error) {
+    		console.log("can't save new balance. :(" + " " + error.message);
+    		$("#error-msg").html("can't save new balance. :(" + " " + error.message);
+			promise.reject();
+    	}
+  	});
+  	return promise;
+}
+
+function saveRecord(rec){
+	
+	var newRecord = new Record(); 
+	// set ACL
+    var recordACL = new Parse.ACL(Parse.User.current());
+    recordACL.setPublicReadAccess(false);   
+    newRecord.setACL(recordACL);
+
+    return newRecord.save(rec);
+}
+
 
 function newProject(){
 	var promise = new Parse.Promise();
@@ -199,6 +336,8 @@ function newProject(){
 }
 
 $(document).ready(function(){
+	initUser();
+
 	$("#signupBtn").click(function(){
 		signupUser().then(function(){
 			//success
@@ -227,17 +366,30 @@ $(document).ready(function(){
 		logoutUser().then(function(){
 			//success
 			initUser();
+	
 		}, function(error) {
 			//error goes here		
-		});;;
-	})
-
-	$("#addBtn").click(function(){
-		newRecord().then(function(){
-
-		}, function(error){
-
 		});
 	});
+
+	$("#addBtn").click(function(){
+
+		newRecord().then(function(){
+			initUser();
+			$("#new-expense").val("");
+			$("#new-expense-des").val("");
+		}, function(error){
+			//error goes here		
+		});
+	});
+
+ /* $("#showAllBtn").click(function(){
+    showAll();
+    console.log("here here");
+    },function(error){
+
+  })
+  ;
+*/
 
 }) // end of "document ready" of jQuery
